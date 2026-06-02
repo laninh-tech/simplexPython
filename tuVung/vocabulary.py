@@ -1,5 +1,9 @@
 from typing import List
-from ..thuatToan.lp_solver import LPProblem, VAR_NONPOS, VAR_FREE, OBJ_MAX
+try:
+    from ..thuatToan.lp_solver import LPProblem, VAR_NONPOS, VAR_FREE, OBJ_MAX
+except (ImportError, ValueError):
+    from thuatToan.lp_solver import LPProblem, VAR_NONPOS, VAR_FREE, OBJ_MAX
+
 
 EPS = 1e-9
 

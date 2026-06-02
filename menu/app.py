@@ -2,9 +2,15 @@ import os
 import re
 from flask import Flask, jsonify, render_template, request
 import numpy as np
-from ..thuatToan.lp_solver import LPProblem, solve_lp, OBJ_MAX, OBJ_MIN
-from ..thuatToan.expression_eval import eval_expression
-from ..tuVung.vocabulary import build_initial_vocabulary
+try:
+    from ..thuatToan.lp_solver import LPProblem, solve_lp, OBJ_MAX, OBJ_MIN
+    from ..thuatToan.expression_eval import eval_expression
+    from ..tuVung.vocabulary import build_initial_vocabulary
+except (ImportError, ValueError):
+    from thuatToan.lp_solver import LPProblem, solve_lp, OBJ_MAX, OBJ_MIN
+    from thuatToan.expression_eval import eval_expression
+    from tuVung.vocabulary import build_initial_vocabulary
+
 
 _template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
 app = Flask(__name__, template_folder=_template_dir)
