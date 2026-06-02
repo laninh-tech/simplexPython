@@ -67,6 +67,8 @@ def eval_expression(expr_str: str) -> float:
         return 0.0
     try:
         expr_str = expr_str.replace('^', '**')  # standard caret to Python power conversion
+        # Normalize Unicode dashes (en-dash and em-dash) from copy-pastes to standard hyphens
+        expr_str = expr_str.replace('\u2013', '-').replace('\u2014', '-')
         tree = ast.parse(expr_str.strip(), mode='eval')
         visitor = SafeEvalVisitor()
         result = visitor.evaluate(tree)
