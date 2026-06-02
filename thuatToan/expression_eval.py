@@ -30,8 +30,6 @@ class SafeEvalVisitor(ast.NodeVisitor):
             return self.evaluate(node.body)
         elif isinstance(node, ast.Constant):
             return float(node.value)
-        elif isinstance(node, ast.Num):  # for compatibility with Python < 3.8
-            return float(node.n)
         elif isinstance(node, ast.BinOp):
             op_type = type(node.op)
             if op_type not in self.operators:
