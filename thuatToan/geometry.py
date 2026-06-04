@@ -11,9 +11,25 @@ SOL_MULTIPLE = 1
 
 EPS = 1e-9
 
+VAR_NONNEG = 0
+VAR_NONPOS = 1
+VAR_FREE = 2
+
 def feasible_point(p, x: float, y: float) -> bool:
-    if x < -1e-8 or y < -1e-8:
+    # Check variable 0 (x1) bounds
+    vs0 = p.varSign[0]
+    if vs0 == VAR_NONNEG and x < -1e-8:
         return False
+    if vs0 == VAR_NONPOS and x > 1e-8:
+        return False
+        
+    # Check variable 1 (x2) bounds
+    vs1 = p.varSign[1]
+    if vs1 == VAR_NONNEG and y < -1e-8:
+        return False
+    if vs1 == VAR_NONPOS and y > 1e-8:
+        return False
+
     for i in range(len(p.b)):
         v = p.A[i][0] * x + p.A[i][1] * y
         limit = p.b[i]
@@ -27,8 +43,18 @@ def feasible_point(p, x: float, y: float) -> bool:
     return True
 
 def feasible_dir(p, dx: float, dy: float) -> bool:
-    if dx < -1e-8 or dy < -1e-8:
+    vs0 = p.varSign[0]
+    if vs0 == VAR_NONNEG and dx < -1e-8:
         return False
+    if vs0 == VAR_NONPOS and dx > 1e-8:
+        return False
+        
+    vs1 = p.varSign[1]
+    if vs1 == VAR_NONNEG and dy < -1e-8:
+        return False
+    if vs1 == VAR_NONPOS and dy > 1e-8:
+        return False
+
     if abs(dx) < EPS and abs(dy) < EPS:
         return False
     for i in range(len(p.b)):
@@ -47,9 +73,24 @@ def unbounded_dir_exists(p) -> bool:
     cc0 = p.c[0] if p.objectiveType == 1 else -p.c[0]
     cc1 = p.c[1] if p.objectiveType == 1 else -p.c[1]
     
-    # Check axis directions
-    dirs.append((1.0, 0.0))
-    dirs.append((0.0, 1.0))
+    # Check axis directions based on variable bounds
+    vs0 = p.varSign[0]
+    if vs0 == VAR_NONNEG:
+        dirs.append((1.0, 0.0))
+    elif vs0 == VAR_NONPOS:
+        dirs.append((-1.0, 0.0))
+    elif vs0 == VAR_FREE:
+        dirs.append((1.0, 0.0))
+        dirs.append((-1.0, 0.0))
+        
+    vs1 = p.varSign[1]
+    if vs1 == VAR_NONNEG:
+        dirs.append((0.0, 1.0))
+    elif vs1 == VAR_NONPOS:
+        dirs.append((0.0, -1.0))
+    elif vs1 == VAR_FREE:
+        dirs.append((0.0, 1.0))
+        dirs.append((0.0, -1.0))
     
     # Check directions parallel to constraints
     for i in range(len(p.b)):
@@ -84,27 +125,22 @@ def solve_geometry(p) -> Dict[str, Any]:
         
     pts: List[Tuple[float, float]] = []
     
-    # 1. Check origin
-    if feasible_point(p, 0.0, 0.0):
-        pts.append((0.0, 0.0))
+    # Find all boundary lines: constraints and active variable bounds
+    lines = []
+    for i in range(len(p.b)):
+        lines.append((p.A[i][0], p.A[i][1], p.b[i]))
         
-    # 2. Intersections with axes
-    for i in range(len(p.b)):
-        a0, a1 = p.A[i][0], p.A[i][1]
-        if abs(a1) > EPS:
-            y = p.b[i] / a1
-            if feasible_point(p, 0.0, y):
-                pts.append((0.0, y))
-        if abs(a0) > EPS:
-            x = p.b[i] / a0
-            if feasible_point(p, x, 0.0):
-                pts.append((x, 0.0))
-                
-    # 3. Intersections between constraints
-    for i in range(len(p.b)):
-        for j in range(i + 1, len(p.b)):
-            a1, b1, c1 = p.A[i][0], p.A[i][1], p.b[i]
-            a2, b2, c2 = p.A[j][0], p.A[j][1], p.b[j]
+    if p.varSign[0] in (VAR_NONNEG, VAR_NONPOS):
+        lines.append((1.0, 0.0, 0.0))
+    if p.varSign[1] in (VAR_NONNEG, VAR_NONPOS):
+        lines.append((0.0, 1.0, 0.0))
+        
+    # Intersections between all boundary lines
+    num_lines = len(lines)
+    for i in range(num_lines):
+        for j in range(i + 1, num_lines):
+            a1, b1, c1 = lines[i]
+            a2, b2, c2 = lines[j]
             det = a1 * b2 - a2 * b1
             if abs(det) < EPS:
                 continue

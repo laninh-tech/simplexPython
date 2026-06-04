@@ -52,7 +52,7 @@ def _parse_problem_payload(data) -> tuple:
     rang_buoc_bien = data.get("rang_buoc_bien", [])
     ten_bien = data.get("ten_bien", [])
     
-    # 1. Evaluate objective function coefficients
+    # 1. Tính toán các hệ số hàm mục tiêu
     he_so_muc_tieu = []
     for idx, item in enumerate(he_so_raw):
         try:
@@ -61,7 +61,7 @@ def _parse_problem_payload(data) -> tuple:
         except Exception as e:
             return None, f"Lỗi biểu thức c{idx+1} ('{item}'): {str(e)}"
             
-    # 2. Evaluate constraint matrix A
+    # 2. Tính toán ma trận hệ số ràng buộc A
     A = []
     for r_idx, row in enumerate(A_raw):
         A_row = []
@@ -73,7 +73,7 @@ def _parse_problem_payload(data) -> tuple:
                 return None, f"Lỗi biểu thức hệ số A dòng {r_idx+1} cột {c_idx+1} ('{item}'): {str(e)}"
         A.append(A_row)
         
-    # 3. Evaluate constraint RHS b
+    # 3. Tính toán vế phải b
     b = []
     for idx, item in enumerate(b_raw):
         try:
@@ -134,17 +134,17 @@ def solve():
     if err:
         return jsonify({"error": err}), 400
         
-    method = int(data.get("method", 3))  # Default to Two Phase
+    method = int(data.get("method", 3))  # Mặc định sử dụng Simplex Hai Pha (value = 3)
     
     try:
-        # Solve problem
+        # Giải bài toán quy hoạch tuyến tính
         sol = solve_lp(problem, method)
         
-        # Get vocabulary
+        # Tạo chuỗi biểu diễn từ vựng xuất phát
         vocab = build_initial_vocabulary(problem)
         
-        # Formulate return package
-        # Format the solution vectors to lists
+        # Dựng gói dữ liệu trả về cho client
+        # Định dạng vector nghiệm sang dạng list thông thường
         x_sol = [float(val) for val in sol.get("x", [])]
         opt_val = float(sol.get("optimum", 0.0))
         

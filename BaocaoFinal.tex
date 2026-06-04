@@ -1,0 +1,1746 @@
+\documentclass[14pt, a4paper]{extarticle}
+
+% --- CẤU HÌNH CƠ BẢN ---
+\usepackage{fontspec}
+\defaultfontfeatures{Ligatures=TeX}
+\IfFontExistsTF{Libertinus Serif}{%
+  \setmainfont{Libertinus Serif}%
+  \setsansfont{Libertinus Sans}%
+}{%
+  \setmainfont{Times New Roman}%
+  \setsansfont{Arial}%
+}
+\usepackage[vietnamese]{babel}
+
+% --- CÁC GÓI TOÁN HỌC VÀ ĐỊNH DẠNG ---
+\usepackage{amsmath, amssymb}
+\usepackage{array}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\setlength{\headheight}{22pt}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{xcolor}
+\usepackage{colortbl}
+\usepackage{tcolorbox}
+\tcbuselibrary{most}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    urlcolor=blue,
+    pdfborder={0 0 0}
+}
+\usepackage{xurl}
+\usepackage{enumitem}
+\usepackage{microtype}
+\usepackage{graphicx}
+\newcommand{\includefig}[2][]{%
+  \IfFileExists{#2}{\includegraphics[#1]{#2}}{%
+    \fbox{\parbox[c][4.5cm][c]{0.92\linewidth}{\centering\small\textit{Chèn file hình:}\\\texttt{\detokenize{#2}}}}%
+  }%
+}
+\usepackage{listings}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{tikz}
+\usetikzlibrary{arrows, shapes, backgrounds}
+\usepackage{setspace}
+
+% --- Tăng kích thước phân số ---
+\makeatletter
+\renewcommand{\frac}{\dfrac}
+\makeatother
+
+% --- ĐỊNH DẠNG TIÊU ĐỀ ---
+\usepackage{titlesec}
+\titleformat{\section}
+  {\normalfont\Large\bfseries\color{black}}{\thesection}{1em}{}[\vspace{0.5pt}\hrule]
+\titleformat{\subsection}
+  {\normalfont\large\bfseries}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\bfseries}{\thesubsubsection}{1em}{}
+
+% --- CẤU HÌNH TRANG ---
+\geometry{a4paper, left=0.75in, right=0.75in, top=1in, bottom=1in}
+\setlength{\parskip}{6pt}
+\setlength{\parindent}{0pt}
+\onehalfspacing
+
+% --- HEADER/FOOTER ---
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textbf{QUY HOẠCH TUYẾN TÍNH}}
+\fancyhead[R]{Báo Cáo Đồ Án}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+
+% --- LỆNH TÙY CHỈNH ---
+\newcommand{\code}[1]{\texttt{\detokenize{#1}}}
+\newcommand{\LP}{Quy hoạch tuyến tính}
+
+% --- LOGO (đặt file img/Hcmus.png cùng thư mục Baocao.tex) ---
+\newcommand{\insertlogo}{%
+  \IfFileExists{img/Hcmus.png}{%
+    \includegraphics[width=0.35\linewidth]{img/Hcmus.png}%
+  }{%
+    \IfFileExists{logo_khtn.png}{%
+      \includegraphics[width=0.35\linewidth]{logo_khtn.png}%
+    }{%
+      \fbox{\parbox[c][2.8cm][c]{0.32\linewidth}{\centering\large\bfseries HCMUS}}%
+    }%
+  }%
+}
+
+% --- ĐỊNH DẠNG CODE ---
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.97,0.97,0.97}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{blue}\bfseries,
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\small,
+    breaklines=true,
+    captionpos=b,
+    numbers=left,
+    numbersep=5pt,
+    frame=single
+}
+\lstset{style=mystyle}
+\lstdefinelanguage{Python}{
+    keywords={def,return,import,from,class,if,else,elif,for,while,True,False,None},
+    keywordstyle=\color{blue}\bfseries,
+    sensitive=true
+}
+
+% ================= BẮT ĐẦU DOCUMENT =================
+\begin{document}
+
+% ================= TRANG BÌA =================
+\begin{titlepage}
+    \centering
+    \thispagestyle{empty}
+
+    \mbox{{\normalsize\bfseries TRƯỜNG ĐẠI HỌC KHOA HỌC TỰ NHIÊN - ĐHQG TP. HỒ CHÍ MINH}}\\
+    {\normalsize\bfseries KHOA TOÁN - TIN HỌC} \\
+    {———————oOo——————–}
+
+    \vspace{0.8cm}
+
+    \insertlogo
+
+    \vspace{0.8cm}
+
+    {\Large\bfseries BÁO CÁO ĐỒ ÁN MÔN HỌC} \\[0.5cm]
+    {\Large \textbf{MÔN: QUY HOẠCH TUYẾN TÍNH}} \\[0.2cm]
+    {\large (Giảng viên: Nguyễn Lê Hoàng Anh)}
+
+    \vspace{0.2cm}
+
+    \begin{center}
+        {\LARGE \textbf{CHƯƠNG TRÌNH GIẢI BÀI TOÁN}} \\[0.35cm]
+        {\LARGE \textbf{QUY HOẠCH TUYẾN TÍNH TỔNG QUÁT}} \\
+    \end{center}
+
+    \vspace{0.2cm}
+    {\large \textit{(QHTT Studio -- Python / Flask)}}
+
+    \vspace{0.8cm}
+
+    {\Large
+    \begin{tabular}{l @{\hspace{2cm}} r}
+        \textbf{Nhóm thực hiện:} & \textbf{Hàm Mục Tiêu = 1/1} \\
+        \midrule
+        La Quãng Ninh & 21110362 \\
+        Nguyễn Phi Hùng & 24110165 \\
+        \bottomrule
+    \end{tabular}
+    }
+
+    \vspace{0.8cm}
+
+    \large{\text{TP. HỒ CHÍ MINH, 06/2026}}
+\end{titlepage}
+
+\newpage
+
+% ================== MỤC LỤC ==================
+    \tableofcontents
+    \newpage
+    
+    % ================== THÔNG TIN THÀNH VIÊN ==================
+    \section{Trang thông tin thành viên}
+    
+    Nhóm thực hiện dự án gồm 02 thành viên. Bảng dưới đây trình bày thông tin, vai trò, nhiệm vụ và mức độ đóng góp của từng thành viên trong quá trình xây dựng chương trình.
+    
+    \begingroup
+    \scriptsize
+    \setlength{\tabcolsep}{2pt}
+    \renewcommand{\arraystretch}{1.25}
+    
+    % Căn bảng ra giữa trang
+    \setlength{\LTleft}{\fill}
+    \setlength{\LTright}{\fill}
+    
+    \begin{longtable}{|>{\centering\arraybackslash}p{0.6cm}
+    |>{\centering\arraybackslash}p{1.2cm}
+    |p{2.2cm}
+    |p{4.5cm}
+    |>{\centering\arraybackslash}p{1.7cm}
+    |p{4.0cm}
+    |>{\centering\arraybackslash}p{1.0cm}|}
+    \hline
+    \textbf{STT} 
+    & \textbf{MSSV} 
+    & \textbf{Họ và tên} 
+    & \textbf{Email} 
+    & \textbf{Vai trò} 
+    & \textbf{Nhiệm vụ} 
+    & \textbf{Đánh giá \%} \\
+    \hline
+    
+    1 
+    & 21110362 
+    & La Quãng Ninh 
+    & \url{21110362@student.hcmus.edu.vn} 
+    & Thành viên 
+    &
+    \begin{itemize}[leftmargin=*,nosep]
+        \item Nghiên cứu \& Khởi tạo.
+        \item Phát triển Giao diện.
+        \item Xử lý Logic \& Thuật toán.
+    \end{itemize}
+    & 100\% \\
+    \hline
+    
+    2 
+    & 24110165 
+    & Nguyễn Phi Hùng 
+    & \url{24110165@student.hcmus.edu.vn} 
+    & Thành viên 
+    &
+    \begin{itemize}[leftmargin=*,nosep]
+        \item Kiểm thử chất lượng.
+        \item Biên soạn Tài liệu Kỹ thuật.
+        \item Lập Báo cáo Dự án.
+    \end{itemize}
+    & 100\% \\
+    \hline
+    
+    \end{longtable}
+    
+    \endgroup
+    
+    
+    % ================== GIỚI THIỆU ==================
+    \section{Giới thiệu dự án}
+    
+    Trong quá trình học tập các môn học liên quan đến Toán tối ưu, Quy hoạch tuyến tính, Vận trù học và Phân tích quyết định, bài toán quy hoạch tuyến tính là một dạng bài toán quan trọng, được ứng dụng rộng rãi trong thực tế. Các bài toán như tối đa hóa lợi nhuận, tối thiểu hóa chi phí, phân bổ nguồn lực, lập kế hoạch sản xuất, tối ưu vận chuyển hoặc quản lý nguyên vật liệu đều có thể được mô hình hóa dưới dạng quy hoạch tuyến tính.
+    
+    Tuy nhiên, khi giải thủ công bằng phương pháp đơn hình, người học thường gặp nhiều khó khăn như nhập sai hệ số, nhầm dấu ràng buộc, khó xác định biến vào, biến ra, khó theo dõi bảng đơn hình và dễ sai sót trong quá trình biến đổi dòng. Vì vậy, nhóm đã xây dựng dự án \textbf{QHTT Studio} nhằm hỗ trợ người dùng giải bài toán quy hoạch tuyến tính tổng quát một cách nhanh chóng, chính xác và trực quan.
+    
+    Dự án được triển khai dưới dạng website trực tuyến, cho phép người dùng nhập bài toán, lựa chọn loại bài toán tối đa hóa hoặc tối thiểu hóa, nhập các ràng buộc với dấu $\leq$, $=$, $\geq$, xử lý các loại ràng buộc biến khác nhau và hiển thị kết quả tối ưu cùng bảng lặp chi tiết.
+    
+    % ================== YÊU CẦU ĐỀ BÀI ==================
+    \section{Yêu cầu đề bài}
+    
+    Đề bài yêu cầu xây dựng một chương trình giải bài toán \textbf{Quy hoạch tuyến tính tổng quát}, với các yêu cầu cụ thể như sau:
+    
+    \subsection{Yêu cầu về biến}
+    
+    Chương trình phải cho phép người dùng nhập số lượng biến tùy ý. Các biến có thể được ký hiệu dưới dạng:
+    
+    \[
+    x_1, x_2, \ldots, x_n
+    \]
+    
+    Trong đó $n$ là số lượng biến quyết định do người dùng nhập vào.
+    
+    \subsection{Yêu cầu về ràng buộc}
+    
+    Chương trình phải cho phép nhập số lượng ràng buộc tùy ý. Mỗi ràng buộc có thể có một trong ba dạng dấu sau:
+    
+    \[
+    \leq, \quad =, \quad \geq
+    \]
+    
+    Dạng tổng quát của hệ ràng buộc là:
+    
+    \[
+    a_{i1}x_1 + a_{i2}x_2 + \ldots + a_{in}x_n \; (\leq, =, \geq) \; b_i
+    \]
+    
+    Với:
+    
+    \begin{itemize}
+        \item $a_{ij}$ là hệ số của biến $x_j$ trong ràng buộc thứ $i$.
+        \item $b_i$ là vế phải của ràng buộc thứ $i$.
+        \item $i = 1, 2, \ldots, m$, với $m$ là số lượng ràng buộc.
+    \end{itemize}
+    
+    \subsection{Yêu cầu về hàm mục tiêu}
+    
+    Chương trình phải cho phép người dùng lựa chọn một trong hai loại bài toán:
+    
+    \[
+    \max Z = c_1x_1 + c_2x_2 + \ldots + c_nx_n
+    \]
+    
+    hoặc
+    
+    \[
+    \min Z = c_1x_1 + c_2x_2 + \ldots + c_nx_n
+    \]
+    
+    Trong đó $c_j$ là hệ số của biến $x_j$ trong hàm mục tiêu.
+    
+    \subsection{Yêu cầu về ràng buộc biến}
+    
+    Chương trình phải chấp nhận các trường hợp ràng buộc biến khác nhau, bao gồm:
+    
+    \begin{itemize}
+        \item Biến không âm: $x_j \geq 0$.
+        \item Biến không dương: $x_j \leq 0$.
+        \item Biến tùy ý: $x_j$ tự do về dấu.
+    \end{itemize}
+    
+    Các biến không thỏa điều kiện không âm được chương trình xử lý bằng cách biến đổi về dạng chuẩn.
+    
+    \subsection{Yêu cầu về đầu ra}
+    Đầu ra của chương trình cần có các nội dung sau:
+    \begin{itemize}
+        \item Đưa ra phương án tối ưu nếu bài toán có nghiệm tối ưu.
+        \item Đưa ra giá trị tối ưu của hàm mục tiêu.
+        \item Xuất tất cả các biến trong bảng lặp, bao gồm biến quyết định, biến bù, biến dư, biến giả và các biến phụ được tạo ra trong quá trình chuẩn hóa.
+        \item Hiển thị các bảng lặp của thuật toán Simplex để người dùng có thể theo dõi quá trình giải.
+    \end{itemize}
+    
+    % ================== CƠ SỞ LÝ THUYẾT ==================
+    \section{Cơ sở lý thuyết}
+    
+    \subsection{Bài toán quy hoạch tuyến tính}
+    
+    Bài toán quy hoạch tuyến tính là bài toán tìm giá trị lớn nhất hoặc nhỏ nhất của một hàm mục tiêu tuyến tính, trong đó các biến phải thỏa mãn một hệ ràng buộc tuyến tính.
+    
+    Dạng tổng quát của bài toán có thể được viết như sau:
+    
+    \[
+    \text{Tối ưu hóa } Z = \sum_{j=1}^{n} c_jx_j
+    \]
+    
+    Với hệ ràng buộc:
+    
+    \[
+    \sum_{j=1}^{n} a_{ij}x_j \; (\leq, =, \geq) \; b_i, \quad i = 1,2,\ldots,m
+    \]
+    
+    Và điều kiện biên của biến:
+    
+    \[
+    x_j \geq 0, \quad x_j \leq 0, \quad \text{hoặc } x_j \text{ tùy ý}
+    \]
+    
+    \subsection{Đưa bài toán về dạng chuẩn}
+    
+    Để áp dụng phương pháp Simplex, bài toán cần được đưa về dạng chuẩn. Quá trình chuẩn hóa gồm các bước chính:
+    
+    \begin{itemize}
+        \item Nếu bài toán là Min, có thể chuyển về Max bằng cách đổi dấu hàm mục tiêu.
+        \item Với ràng buộc dạng $\leq$, thêm biến bù.
+        \item Với ràng buộc dạng $\geq$, trừ biến dư và thêm biến giả nếu cần.
+        \item Với ràng buộc dạng $=$, thêm biến giả nếu chưa có nghiệm cơ sở ban đầu.
+        \item Với biến $x_j \leq 0$, đặt $x_j = -y_j$, với $y_j \geq 0$.
+        \item Với biến tự do, đặt $x_j = x_j^+ - x_j^-$, với $x_j^+ \geq 0$ và $x_j^- \geq 0$.
+    \end{itemize}
+    
+    \subsection{Phương pháp Simplex}
+    
+    Phương pháp Simplex là thuật toán giải bài toán quy hoạch tuyến tính bằng cách di chuyển qua các nghiệm cơ sở khả thi. Ở mỗi bước lặp, thuật toán chọn một biến vào cơ sở và một biến ra khỏi cơ sở để cải thiện giá trị hàm mục tiêu.
+    
+    Quy trình cơ bản của thuật toán Simplex gồm:
+    
+    \begin{enumerate}
+        \item Lập bảng đơn hình ban đầu.
+        \item Kiểm tra điều kiện tối ưu.
+        \item Chọn biến vào cơ sở.
+        \item Chọn biến ra khỏi cơ sở.
+        \item Thực hiện phép xoay quanh phần tử trụ.
+        \item Cập nhật bảng đơn hình.
+        \item Lặp lại cho đến khi đạt điều kiện tối ưu hoặc phát hiện bài toán vô nghiệm/không bị chặn.
+    \end{enumerate}
+    
+    \subsection{Phương pháp Simplex Hai Pha}
+    
+    Đối với các bài toán chưa có nghiệm cơ sở khả thi ban đầu, chương trình sử dụng phương pháp Simplex Hai Pha.
+    
+    \subsubsection{Pha 1}
+    
+    Ở pha 1, chương trình thêm các biến giả vào hệ ràng buộc và xây dựng một hàm mục tiêu phụ nhằm tìm nghiệm cơ sở khả thi ban đầu. Nếu giá trị tối ưu của hàm mục tiêu phụ khác 0, bài toán ban đầu không có nghiệm khả thi.
+    
+    \subsubsection{Pha 2}
+    
+    Sau khi tìm được nghiệm cơ sở khả thi, chương trình loại bỏ các biến giả và tiếp tục tối ưu hàm mục tiêu gốc để tìm phương án tối ưu của bài toán ban đầu.
+    
+    % ================== PHÂN TÍCH HỆ THỐNG ==================
+    \section{Phân tích hệ thống}
+    
+    \subsection{Tên chương trình}
+    
+    Tên chương trình: \textbf{QHTT Studio}
+    
+    Đường dẫn truy cập chương trình:
+    
+    \[
+    \text{\url{https://simplexpython.onrender.com/}}
+    \]
+    
+    \subsection{Mục tiêu xây dựng chương trình}
+    
+    Chương trình được xây dựng nhằm hỗ trợ người dùng giải các bài toán quy hoạch tuyến tính tổng quát. Hệ thống không chỉ đưa ra kết quả cuối cùng mà còn hiển thị quá trình giải thông qua các bảng lặp, giúp người dùng hiểu rõ hơn cách thuật toán hoạt động.
+    
+    \subsection{Đối tượng sử dụng}
+    
+    Đối tượng sử dụng chính của chương trình gồm:
+    
+    \begin{itemize}
+        \item Sinh viên học môn Quy hoạch tuyến tính, Toán tối ưu hoặc Vận trù học.
+        \item Giảng viên cần công cụ minh họa thuật toán Simplex.
+        \item Người tự học muốn kiểm tra kết quả bài toán.
+        \item Người cần giải nhanh các bài toán tối ưu tuyến tính ở mức cơ bản.
+    \end{itemize}
+    
+    \subsection{Chức năng chính}
+    
+    Chương trình có các chức năng chính sau:
+    
+    \begin{itemize}
+        \item Nhập số lượng biến.
+        \item Nhập số lượng ràng buộc.
+        \item Nhập hệ số hàm mục tiêu.
+        \item Chọn loại bài toán Max hoặc Min.
+        \item Nhập hệ số các ràng buộc.
+        \item Chọn dấu ràng buộc $\leq$, $=$ hoặc $\geq$.
+        \item Chọn ràng buộc biên của từng biến.
+        \item Giải bài toán bằng phương pháp Simplex.
+        \item Hiển thị phương án tối ưu.
+        \item Hiển thị giá trị tối ưu.
+        \item Hiển thị toàn bộ biến trong bảng lặp.
+        \item Hiển thị quá trình lặp của thuật toán.
+    \end{itemize}
+    
+    % ================== THIẾT KẾ THUẬT TOÁN ==================
+    \section{Thiết kế thuật toán}
+    
+    \subsection{Dữ liệu đầu vào}
+    
+    Dữ liệu đầu vào của chương trình gồm:
+    
+    \begin{itemize}
+        \item Số biến quyết định $n$.
+        \item Số ràng buộc $m$.
+        \item Loại bài toán: Max hoặc Min.
+        \item Vector hệ số hàm mục tiêu:
+        \[
+        C = (c_1, c_2, \ldots, c_n)
+        \]
+        \item Ma trận hệ số ràng buộc:
+        \[
+        A = [a_{ij}]_{m \times n}
+        \]
+        \item Vector vế phải:
+        \[
+        B = (b_1, b_2, \ldots, b_m)
+        \]
+        \item Dấu của từng ràng buộc: $\leq$, $=$, $\geq$.
+        \item Ràng buộc biên của từng biến: $\geq 0$, $\leq 0$, hoặc tùy ý.
+    \end{itemize}
+    
+    \subsection{Dữ liệu đầu ra}
+    
+    Dữ liệu đầu ra của chương trình gồm:
+    
+    \begin{itemize}
+        \item Danh sách toàn bộ biến trong bảng lặp.
+        \item Các bảng đơn hình qua từng vòng lặp.
+        \item Phương án tối ưu.
+        \item Giá trị tối ưu.
+        \item Thông báo trạng thái bài toán: có nghiệm tối ưu, vô nghiệm hoặc không bị chặn.
+    \end{itemize}
+    
+    \subsection{Quy trình xử lý tổng quát}
+    
+    Quy trình xử lý của chương trình được mô tả như sau:
+    
+    \begin{enumerate}
+        \item Người dùng nhập dữ liệu bài toán.
+        \item Chương trình kiểm tra dữ liệu đầu vào.
+        \item Chuyển bài toán Min về Max nếu cần.
+        \item Xử lý các biến có điều kiện biên khác $x_j \geq 0$.
+        \item Chuẩn hóa các ràng buộc.
+        \item Thêm biến bù, biến dư và biến giả.
+        \item Lập bảng đơn hình ban đầu.
+        \item Nếu cần, thực hiện Pha 1 để tìm nghiệm cơ sở khả thi.
+        \item Thực hiện Pha 2 để tối ưu hàm mục tiêu gốc.
+        \item Xuất kết quả và toàn bộ bảng lặp.
+    \end{enumerate}
+    
+    \subsection{Mã giả thuật toán}
+    
+    \begin{verbatim}
+    Input: n, m, objective_type, C, A, B, signs, variable_bounds
+    
+    Bước 1: Đọc dữ liệu đầu vào từ giao diện.
+    Bước 2: Nếu bài toán là Min, đổi dấu hàm mục tiêu để chuyển về Max.
+    Bước 3: Với mỗi biến:
+            Nếu x_j <= 0 thì đặt x_j = -y_j.
+            Nếu x_j tự do thì đặt x_j = x_j^+ - x_j^-.
+    Bước 4: Với mỗi ràng buộc:
+            Nếu dấu <= thì thêm biến bù.
+            Nếu dấu >= thì trừ biến dư và thêm biến giả.
+            Nếu dấu = thì thêm biến giả.
+    Bước 5: Lập bảng Simplex ban đầu.
+    Bước 6: Nếu có biến giả:
+            Thực hiện Simplex pha 1.
+            Nếu giá trị tối ưu pha 1 khác 0:
+                Kết luận bài toán vô nghiệm.
+            Ngược lại:
+                Chuyển sang pha 2.
+    Bước 7: Thực hiện Simplex với hàm mục tiêu gốc.
+    Bước 8: Trong mỗi vòng lặp:
+            Chọn biến vào.
+            Chọn biến ra.
+            Xác định phần tử trụ.
+            Biến đổi bảng đơn hình.
+            Lưu lại bảng lặp.
+    Bước 9: Nếu đạt điều kiện tối ưu:
+            Xuất phương án tối ưu và giá trị tối ưu.
+    Bước 10: Nếu không chọn được biến ra:
+            Kết luận bài toán không bị chặn.
+    Output: Kết quả tối ưu, phương án tối ưu, bảng lặp.
+    \end{verbatim}
+    
+    % ================== MÔ TẢ GIAO DIỆN ==================
+    \section{Mô tả giao diện chương trình}
+    
+    Giao diện chương trình được thiết kế theo hướng đơn giản, dễ sử dụng và phù hợp với người học. Các khu vực chính trên giao diện gồm:
+    
+    \begin{itemize}
+        \item Khu vực nhập số lượng biến.
+        \item Khu vực chọn loại bài toán Max hoặc Min.
+        \item Khu vực nhập hệ số hàm mục tiêu.
+        \item Khu vực nhập số lượng ràng buộc.
+        \item Khu vực nhập hệ số ràng buộc.
+        \item Khu vực chọn dấu ràng buộc.
+        \item Khu vực chọn phương pháp giải.
+        \item Nút thực hiện giải bài toán.
+        \item Khu vực hiển thị kết quả.
+        \item Khu vực hiển thị bảng lặp.
+    \end{itemize}
+    
+    Giao diện giúp người dùng thao tác theo quy trình tự nhiên: nhập bài toán, chọn phương pháp, giải bài toán và xem kết quả.
+    
+    % ================== HƯỚNG DẪN SỬ DỤNG WEBSITE ==================
+    \section{Hướng dẫn sử dụng website}
+    
+    \subsection{Mục tiêu của phần hướng dẫn}
+    
+    Phần này trình bày cách sử dụng website QHTT Studio thông qua một ví dụ duy nhất và thực hiện lần lượt với cả 04 phương pháp giải mà website hỗ trợ, gồm: \textbf{Simplex Hai Pha}, \textbf{Simplex tiêu chuẩn Dantzig}, \textbf{Simplex xoay vòng Bland} và \textbf{Phương pháp hình học 2D}. Mục tiêu chính của phần này là hướng dẫn người dùng biết nhập dữ liệu ở từng vị trí, chọn phương pháp giải và đặc biệt là biết cách đọc kết quả sau khi chương trình xử lý.
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.95\textwidth]{fig_01_tong_quan_giao_dien.png}
+        \caption{Minh họa tổng quan các khu vực chính trên website QHTT Studio}
+    \end{figure}
+    
+    \subsection{Ví dụ dùng chung cho cả 04 phương pháp}
+    
+    Để dễ so sánh kết quả giữa các phương pháp, báo cáo sử dụng cùng một bài toán Quy hoạch tuyến tính hai biến như sau:
+    
+    \[
+    \max Z = 3x_1 + 5x_2
+    \]
+    
+    Với các ràng buộc:
+    
+    \[
+    2x_1 + x_2 \leq 8
+    \]
+    
+    \[
+    x_1 + 2x_2 \leq 8
+    \]
+    
+    \[
+    x_1, x_2 \geq 0
+    \]
+    
+    Bài toán này được chọn vì có đúng hai biến nên có thể giải bằng cả phương pháp Simplex và phương pháp hình học 2D. Ngoài ra, bài toán có nghiệm tối ưu rõ ràng tại giao điểm của hai đường ràng buộc, giúp người dùng dễ kiểm tra kết quả.
+    
+    \subsection{Nhập dữ liệu bài toán trên website}
+    
+    Người dùng truy cập website:
+    
+    \[
+    \text{\url{https://simplexpython.onrender.com/}}
+    \]
+    
+    Sau đó nhập dữ liệu theo bảng sau:
+    
+    \begin{longtable}{|p{5cm}|p{8cm}|}
+    \hline
+    \textbf{Vị trí nhập trên website} & \textbf{Giá trị cần nhập} \\
+    \hline
+    Số lượng biến & 2 \\
+    \hline
+    Số lượng ràng buộc & 2 \\
+    \hline
+    Loại bài toán & Tối đa hóa, chọn Max \\
+    \hline
+    Hệ số hàm mục tiêu & $3$ và $5$, tương ứng với $x_1$ và $x_2$ \\
+    \hline
+    Ràng buộc 1 & $2x_1 + 1x_2 \leq 8$ \\
+    \hline
+    Ràng buộc 2 & $1x_1 + 2x_2 \leq 8$ \\
+    \hline
+    Điều kiện biến & $x_1 \geq 0$, $x_2 \geq 0$ \\
+    \hline
+    \end{longtable}
+    
+    Khi nhập hệ số, nếu hệ số của biến bằng 0 thì vẫn phải nhập 0, không để trống ô. Việc nhập đủ hệ số giúp chương trình nhận diện chính xác cấu trúc bài toán.
+    
+    
+    \subsection{Thực hiện với phương pháp 1: Simplex Hai Pha}
+    
+    \subsubsection{Cách chọn phương pháp}
+    
+    Tại mục \textbf{Phương pháp giải}, người dùng chọn:
+    
+    \[
+    \textbf{Simplex Hai Pha}
+    \]
+    
+    Sau đó nhấn nút \textbf{Giải bài toán}. Chương trình sẽ thực hiện quá trình giải theo hai giai đoạn. Pha 1 dùng để kiểm tra và tìm nghiệm cơ sở khả thi ban đầu. Pha 2 dùng để tối ưu hàm mục tiêu gốc.
+    
+    \subsubsection{Cách đọc kết quả}
+    
+    Khi dùng Simplex Hai Pha, người dùng cần đọc kết quả theo thứ tự:
+    
+    \begin{enumerate}
+        \item Xem kết quả Pha 1. Nếu giá trị hàm mục tiêu phụ $w = 0$, bài toán gốc có nghiệm khả thi.
+        \item Chuyển sang Pha 2 để đọc kết quả tối ưu của hàm mục tiêu $z$.
+        \item Trong phần báo cáo kết quả, kiểm tra dòng trạng thái. Nếu hệ thống báo \textbf{có nghiệm tối ưu}, bài toán đã giải thành công.
+        \item Đọc phương án tối ưu tại các biến gốc $x_1$, $x_2$.
+        \item Đọc giá trị tối ưu tại dòng $Z_{\max}$.
+    \end{enumerate}
+    
+    Với ví dụ đang xét, kết quả cần đọc là:
+    
+    \[
+    x_1 = \frac{8}{3} \approx 2.6667
+    \]
+    
+    \[
+    x_2 = \frac{8}{3} \approx 2.6667
+    \]
+    
+    \[
+    Z_{\max} = \frac{64}{3} \approx 21.3333
+    \]
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.95\textwidth]{fig_03_ket_qua_simplex_hai_pha.png}
+        \caption{Minh họa cách đọc kết quả khi chọn phương pháp Simplex Hai Pha}
+    \end{figure}
+    
+    \subsection{Thực hiện với phương pháp 2: Simplex tiêu chuẩn Dantzig}
+    
+    \subsubsection{Cách chọn phương pháp}
+    
+    Tại mục \textbf{Phương pháp giải}, người dùng chọn:
+    
+    \[
+    \textbf{Simplex tiêu chuẩn (Dantzig)}
+    \]
+    
+    Sau đó nhấn nút \textbf{Giải bài toán}. Phương pháp Dantzig lựa chọn biến vào cơ sở dựa trên hệ số cải thiện tốt nhất trong dòng mục tiêu.
+    
+    \subsubsection{Cách đọc kết quả}
+    
+    Đối với phương pháp Dantzig, người dùng đọc kết quả như sau:
+    
+    \begin{enumerate}
+        \item Xem phần \textbf{Báo cáo kết quả} để biết bài toán có nghiệm tối ưu hay không.
+        \item Xem phần \textbf{Phương án tối ưu} để lấy giá trị các biến quyết định.
+        \item Xem phần \textbf{Giá trị tối ưu} để lấy giá trị của hàm mục tiêu.
+        \item Nếu muốn kiểm tra quá trình giải, xem các bảng đơn hình từng bước.
+        \item Ở bảng cuối cùng, các biến cơ sở sẽ có giá trị tại cột vế phải.
+    \end{enumerate}
+    
+    Với ví dụ này, kết quả của Dantzig là:
+    
+    \[
+    \text{PATU} = \left(\frac{8}{3}, \frac{8}{3}\right)
+    \]
+    
+    \[
+    \text{GTTU} = \frac{64}{3}
+    \]
+    
+    Điều này có nghĩa là tại phương án tối ưu, cả hai biến $x_1$ và $x_2$ đều nhận giá trị $\frac{8}{3}$.
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.95\textwidth]{fig_04_ket_qua_dantzig.png}
+        \caption{Minh họa cách đọc kết quả khi chọn phương pháp Simplex tiêu chuẩn Dantzig}
+    \end{figure}
+    
+    \subsection{Thực hiện với phương pháp 3: Simplex xoay vòng Bland}
+    
+    \subsubsection{Cách chọn phương pháp}
+    
+    Tại mục \textbf{Phương pháp giải}, người dùng chọn:
+    
+    \[
+    \textbf{Simplex xoay vòng (Bland)}
+    \]
+    
+    Sau đó nhấn nút \textbf{Giải bài toán}. Phương pháp Bland được sử dụng để hạn chế hiện tượng xoay vòng trong một số bài toán suy biến. Khi có nhiều biến có thể được chọn, Bland ưu tiên biến có chỉ số nhỏ hơn.
+    
+    \subsubsection{Cách đọc kết quả}
+    
+    Cách đọc kết quả của Bland tương tự phương pháp Simplex tiêu chuẩn:
+    
+    \begin{enumerate}
+        \item Đọc trạng thái bài toán trong phần báo cáo kết quả.
+        \item Nếu trạng thái là \textbf{có nghiệm tối ưu}, tiếp tục đọc phương án tối ưu.
+        \item Ghi lại giá trị của các biến gốc $x_1$, $x_2$.
+        \item Ghi lại giá trị tối ưu của hàm mục tiêu.
+        \item So sánh kết quả với Dantzig. Với cùng một bài toán, nếu cả hai phương pháp đều giải đúng thì phương án tối ưu và giá trị tối ưu phải giống nhau.
+    \end{enumerate}
+    
+    Với ví dụ này, Bland cho cùng kết quả:
+    
+    \[
+    x_1 = \frac{8}{3}, \quad x_2 = \frac{8}{3}
+    \]
+    
+    \[
+    Z_{\max} = \frac{64}{3}
+    \]
+    
+    Điều này cho thấy dù quy tắc chọn biến vào/ra khác nhau, kết quả tối ưu cuối cùng của bài toán vẫn không đổi.
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.95\textwidth]{fig_05_ket_qua_bland.png}
+        \caption{Minh họa cách đọc kết quả khi chọn phương pháp Simplex xoay vòng Bland}
+    \end{figure}
+    
+    \subsection{Thực hiện với phương pháp 4: Phương pháp hình học 2D}
+    
+    \subsubsection{Cách chọn phương pháp}
+    
+    Tại mục \textbf{Phương pháp giải}, người dùng chọn:
+    
+    \[
+    \textbf{Phương pháp hình học (Đồ thị 2D)}
+    \]
+    
+    Phương pháp này chỉ phù hợp khi bài toán có đúng hai biến quyết định. Do ví dụ đang xét có hai biến $x_1$ và $x_2$, ta có thể sử dụng phương pháp hình học để kiểm tra trực quan kết quả.
+    
+    \subsubsection{Cách đọc kết quả}
+    
+    Với phương pháp hình học, người dùng đọc kết quả theo các bước sau:
+    
+    \begin{enumerate}
+        \item Xem các đường ràng buộc được vẽ trên mặt phẳng tọa độ.
+        \item Xác định miền nghiệm khả thi là phần thỏa tất cả các ràng buộc và điều kiện $x_1, x_2 \geq 0$.
+        \item Xác định các đỉnh của miền nghiệm.
+        \item Tính giá trị hàm mục tiêu tại từng đỉnh.
+        \item Chọn đỉnh làm hàm mục tiêu đạt giá trị lớn nhất vì bài toán là Max.
+    \end{enumerate}
+    
+    Hai đường ràng buộc chính là:
+    
+    \[
+    2x_1 + x_2 = 8
+    \]
+    
+    \[
+    x_1 + 2x_2 = 8
+    \]
+    
+    Giao điểm của hai đường này được tìm bằng cách giải hệ:
+    
+    \[
+    \begin{cases}
+    2x_1 + x_2 = 8 \\
+    x_1 + 2x_2 = 8
+    \end{cases}
+    \]
+    
+    Từ đó suy ra:
+    
+    \[
+    x_1 = \frac{8}{3}, \quad x_2 = \frac{8}{3}
+    \]
+    
+    Thay vào hàm mục tiêu:
+    
+    \[
+    Z = 3 \cdot \frac{8}{3} + 5 \cdot \frac{8}{3}
+    \]
+    
+    \[
+    Z = 8 + \frac{40}{3} = \frac{64}{3}
+    \]
+    
+    Vì vậy, phương pháp hình học cũng cho kết quả:
+    
+    \[
+    \text{PATU} = \left(\frac{8}{3}, \frac{8}{3}\right)
+    \]
+    
+    \[
+    \text{GTTU} = \frac{64}{3}
+    \]
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.95\textwidth]{fig_06_ket_qua_hinh_hoc_2d.png}
+        \caption{Minh họa cách đọc kết quả khi chọn phương pháp hình học 2D}
+    \end{figure}
+    
+    \subsection{Cách đọc kết quả cuối cùng trên website}
+    
+    Sau khi chạy một trong bốn phương pháp, người dùng cần tập trung vào hai khu vực chính: \textbf{Báo cáo kết quả} và \textbf{Bảng đơn hình từng bước}.
+    
+    \subsubsection{Đọc trong phần Báo cáo kết quả}
+    
+    Trong phần này, người dùng cần đọc:
+    
+    \begin{itemize}
+        \item \textbf{Trạng thái bài toán}: cho biết bài toán có nghiệm tối ưu, vô nghiệm hay không bị chặn.
+        \item \textbf{Phương án tối ưu}: cho biết giá trị của các biến gốc $x_1$, $x_2$, \ldots
+        \item \textbf{Giá trị tối ưu}: cho biết giá trị lớn nhất hoặc nhỏ nhất của hàm mục tiêu.
+    \end{itemize}
+    
+    Với ví dụ đang xét, kết quả cần ghi là:
+    
+    \[
+    \boxed{x_1 = \frac{8}{3}, \quad x_2 = \frac{8}{3}}
+    \]
+    
+    \[
+    \boxed{Z_{\max} = \frac{64}{3}}
+    \]
+    
+    \subsubsection{Đọc trong bảng đơn hình cuối cùng}
+    
+    Trong bảng Simplex cuối cùng, cách đọc như sau:
+    
+    \begin{itemize}
+        \item Tìm các biến gốc $x_1$, $x_2$ trong cột biến cơ sở.
+        \item Giá trị của biến cơ sở nằm ở cột vế phải, thường ký hiệu là RHS hoặc $b$.
+        \item Dòng $z$ hoặc dòng mục tiêu ở cột RHS cho biết giá trị tối ưu.
+        \item Các biến không nằm trong cơ sở thường nhận giá trị bằng 0.
+    \end{itemize}
+    
+    Ví dụ, nếu bảng cuối cùng có:
+    
+    \[
+    x_1 = \frac{8}{3}, \quad x_2 = \frac{8}{3}, \quad z = \frac{64}{3}
+    \]
+    
+    thì phương án tối ưu là:
+    
+    \[
+    \left(\frac{8}{3}, \frac{8}{3}\right)
+    \]
+    
+    và giá trị tối ưu là:
+    
+    \[
+    \frac{64}{3}
+    \]
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.95\textwidth]{fig_07_cach_doc_ket_qua.png}
+        \caption{Minh họa cách đọc trạng thái, phương án tối ưu và giá trị tối ưu}
+    \end{figure}
+    
+    \subsection{Bảng so sánh kết quả của 04 phương pháp}
+    
+    Sau khi chạy cùng một ví dụ bằng cả 04 phương pháp, ta thu được bảng so sánh như sau:
+    
+    \begin{longtable}{|p{5cm}|p{4cm}|p{4cm}|}
+    \hline
+    \textbf{Phương pháp} & \textbf{Phương án tối ưu} & \textbf{Giá trị tối ưu} \\
+    \hline
+    Simplex Hai Pha & $\left(\frac{8}{3}, \frac{8}{3}\right)$ & $\frac{64}{3}$ \\
+    \hline
+    Simplex tiêu chuẩn Dantzig & $\left(\frac{8}{3}, \frac{8}{3}\right)$ & $\frac{64}{3}$ \\
+    \hline
+    Simplex xoay vòng Bland & $\left(\frac{8}{3}, \frac{8}{3}\right)$ & $\frac{64}{3}$ \\
+    \hline
+    Phương pháp hình học 2D & $\left(\frac{8}{3}, \frac{8}{3}\right)$ & $\frac{64}{3}$ \\
+    \hline
+    \end{longtable}
+    
+    Như vậy, cả bốn phương pháp đều cho cùng một phương án tối ưu và cùng một giá trị tối ưu. Điều này cho thấy chương trình xử lý nhất quán giữa các phương pháp giải khác nhau.
+    
+    \subsection{Giải thích chi tiết vì sao ra được kết quả tối ưu}
+    
+    Phần này giải thích rõ quá trình tính toán để thấy vì sao website trả về kết quả:
+    
+    \[
+    x_1 = \frac{8}{3}, \quad x_2 = \frac{8}{3}, \quad Z_{\max} = \frac{64}{3}
+    \]
+    
+    Kết quả này không xuất hiện ngẫu nhiên mà được suy ra từ quá trình biến đổi bảng đơn hình hoặc từ việc xét các đỉnh của miền nghiệm.
+    
+    \subsubsection{Chuẩn hóa bài toán trước khi giải}
+    
+    Bài toán ban đầu là:
+    
+    \[
+    \max Z = 3x_1 + 5x_2
+    \]
+    
+    \[
+    2x_1 + x_2 \leq 8
+    \]
+    
+    \[
+    x_1 + 2x_2 \leq 8
+    \]
+    
+    \[
+    x_1,x_2 \geq 0
+    \]
+    
+    Vì hai ràng buộc đều có dấu $\leq$, ta thêm hai biến bù $s_1$ và $s_2$ để đưa bài toán về dạng phương trình:
+    
+    \[
+    2x_1 + x_2 + s_1 = 8
+    \]
+    
+    \[
+    x_1 + 2x_2 + s_2 = 8
+    \]
+    
+    Trong đó:
+    
+    \[
+    s_1,s_2 \geq 0
+    \]
+    
+    Ban đầu, nếu cho $x_1 = 0$ và $x_2 = 0$, ta có:
+    
+    \[
+    s_1 = 8, \quad s_2 = 8
+    \]
+    
+    Do đó bài toán đã có nghiệm cơ sở khả thi ban đầu. Đây là lý do trong ví dụ này phương pháp Simplex Hai Pha không cần thêm biến giả.
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.95\textwidth]{fig_11_giai_thich_hai_pha.png}
+        \caption{Giải thích vì sao Pha 1 cho kết quả khả thi và chuyển sang Pha 2}
+    \end{figure}
+    
+    \subsubsection{Tính chi tiết theo Simplex tiêu chuẩn Dantzig}
+    
+    Với bài toán Max, chương trình xét dòng $C_j-Z_j$. Nếu còn hệ số dương thì vẫn có thể cải thiện hàm mục tiêu. Biến vào cơ sở được chọn là biến có hệ số $C_j-Z_j$ dương lớn nhất.
+    
+    Ở bảng ban đầu:
+    
+    \[
+    C_j-Z_j = (3,5,0,0)
+    \]
+    
+    Hệ số lớn nhất là $5$, nằm ở cột $x_2$, nên $x_2$ được chọn làm biến vào cơ sở.
+    
+    Tiếp theo tính tỉ số để chọn biến ra:
+    
+    \[
+    \frac{8}{1} = 8
+    \]
+    
+    \[
+    \frac{8}{2} = 4
+    \]
+    
+    Tỉ số nhỏ nhất là $4$, nên hàng thứ hai được chọn, tức là biến $s_2$ ra khỏi cơ sở. Phần tử trụ là hệ số $2$ tại giao của hàng $s_2$ và cột $x_2$.
+    
+    Sau phép xoay thứ nhất, bảng mới vẫn còn $C_j-Z_j$ của $x_1$ bằng $\frac{1}{2}$, là số dương. Vì vậy $x_1$ tiếp tục được chọn làm biến vào cơ sở.
+    
+    Tính tỉ số lần hai:
+    
+    \[
+    \frac{4}{3/2} = \frac{8}{3}
+    \]
+    
+    \[
+    \frac{4}{1/2} = 8
+    \]
+    
+    Tỉ số nhỏ nhất là $\frac{8}{3}$, nên biến $s_1$ ra khỏi cơ sở. Sau phép xoay thứ hai, bảng cuối cùng có tất cả hệ số $C_j-Z_j \leq 0$, do đó thuật toán dừng.
+    
+    Tại bảng cuối cùng, hai biến cơ sở là $x_1$ và $x_2$. Giá trị của chúng được đọc ở cột vế phải:
+    
+    \[
+    x_1 = \frac{8}{3}
+    \]
+    
+    \[
+    x_2 = \frac{8}{3}
+    \]
+    
+    Giá trị hàm mục tiêu:
+    
+    \[
+    Z = 3\cdot\frac{8}{3} + 5\cdot\frac{8}{3}
+    \]
+    
+    \[
+    Z = 8 + \frac{40}{3} = \frac{24}{3} + \frac{40}{3} = \frac{64}{3}
+    \]
+    
+    Vì vậy:
+    
+    \[
+    Z_{\max} = \frac{64}{3} \approx 21.3333
+    \]
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.98\textwidth]{fig_08_tinh_chi_tiet_dantzig.png}
+        \caption{Quá trình tính chi tiết theo phương pháp Simplex tiêu chuẩn Dantzig}
+    \end{figure}
+    
+    \subsubsection{Tính chi tiết theo Simplex xoay vòng Bland}
+    
+    Phương pháp Bland cũng dựa trên bảng đơn hình, nhưng khác ở quy tắc chọn biến vào cơ sở. Nếu có nhiều biến có thể vào cơ sở, Bland chọn biến có chỉ số nhỏ nhất.
+    
+    Ở bảng ban đầu:
+    
+    \[
+    C_j-Z_j = (3,5,0,0)
+    \]
+    
+    Cả $x_1$ và $x_2$ đều có hệ số dương, nhưng Bland chọn $x_1$ trước vì chỉ số của $x_1$ nhỏ hơn $x_2$.
+    
+    Tính tỉ số:
+    
+    \[
+    \frac{8}{2} = 4
+    \]
+    
+    \[
+    \frac{8}{1} = 8
+    \]
+    
+    Tỉ số nhỏ nhất là $4$, nên biến $s_1$ ra khỏi cơ sở. Sau phép xoay thứ nhất, dòng $C_j-Z_j$ vẫn còn hệ số dương tại cột $x_2$, vì vậy $x_2$ tiếp tục vào cơ sở.
+    
+    Tính tỉ số ở lần tiếp theo:
+    
+    \[
+    \frac{4}{1/2} = 8
+    \]
+    
+    \[
+    \frac{4}{3/2} = \frac{8}{3}
+    \]
+    
+    Tỉ số nhỏ nhất là $\frac{8}{3}$, nên biến $s_2$ ra khỏi cơ sở. Bảng cuối cùng thu được giống kết quả của Dantzig:
+    
+    \[
+    x_1 = \frac{8}{3}, \quad x_2 = \frac{8}{3}
+    \]
+    
+    \[
+    Z_{\max} = \frac{64}{3}
+    \]
+    
+    Như vậy, mặc dù Dantzig và Bland chọn biến vào cơ sở theo thứ tự khác nhau, kết quả tối ưu cuối cùng vẫn giống nhau.
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.98\textwidth]{fig_09_tinh_chi_tiet_bland.png}
+        \caption{Quá trình tính chi tiết theo phương pháp Simplex xoay vòng Bland}
+    \end{figure}
+    
+    \subsubsection{Tính chi tiết theo phương pháp hình học 2D}
+    
+    Vì bài toán có hai biến $x_1$ và $x_2$, ta có thể kiểm tra kết quả bằng phương pháp hình học. Trước hết, chuyển các ràng buộc thành đường thẳng:
+    
+    \[
+    2x_1 + x_2 = 8
+    \]
+    
+    \[
+    x_1 + 2x_2 = 8
+    \]
+    
+    Miền nghiệm là phần thỏa đồng thời:
+    
+    \[
+    2x_1+x_2 \leq 8
+    \]
+    
+    \[
+    x_1+2x_2 \leq 8
+    \]
+    
+    \[
+    x_1,x_2 \geq 0
+    \]
+    
+    Các đỉnh của miền nghiệm gồm:
+    
+    \[
+    (0,0), \quad (4,0), \quad (0,4), \quad \left(\frac{8}{3},\frac{8}{3}\right)
+    \]
+    
+    Giao điểm của hai đường ràng buộc được tìm bằng cách giải hệ:
+    
+    \[
+    \begin{cases}
+    2x_1 + x_2 = 8 \\
+    x_1 + 2x_2 = 8
+    \end{cases}
+    \]
+    
+    Nhân phương trình thứ hai với $2$:
+    
+    \[
+    2x_1 + 4x_2 = 16
+    \]
+    
+    Lấy phương trình này trừ phương trình thứ nhất:
+    
+    \[
+    (2x_1+4x_2)-(2x_1+x_2)=16-8
+    \]
+    
+    \[
+    3x_2 = 8
+    \]
+    
+    \[
+    x_2 = \frac{8}{3}
+    \]
+    
+    Thay vào phương trình:
+    
+    \[
+    x_1 + 2x_2 = 8
+    \]
+    
+    ta được:
+    
+    \[
+    x_1 + 2\cdot\frac{8}{3} = 8
+    \]
+    
+    \[
+    x_1 + \frac{16}{3} = \frac{24}{3}
+    \]
+    
+    \[
+    x_1 = \frac{8}{3}
+    \]
+    
+    Sau đó tính giá trị hàm mục tiêu tại các đỉnh:
+    
+    \[
+    Z(0,0)=0
+    \]
+    
+    \[
+    Z(4,0)=3\cdot4+5\cdot0=12
+    \]
+    
+    \[
+    Z(0,4)=3\cdot0+5\cdot4=20
+    \]
+    
+    \[
+    Z\left(\frac{8}{3},\frac{8}{3}\right)
+    =3\cdot\frac{8}{3}+5\cdot\frac{8}{3}
+    =\frac{64}{3}
+    \]
+    
+    Vì:
+    
+    \[
+    \frac{64}{3} \approx 21.3333 > 20 > 12 > 0
+    \]
+    
+    nên điểm tối ưu là:
+    
+    \[
+    \left(\frac{8}{3},\frac{8}{3}\right)
+    \]
+    
+    và giá trị tối ưu là:
+    
+    \[
+    Z_{\max}=\frac{64}{3}
+    \]
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.98\textwidth]{fig_10_tinh_chi_tiet_hinh_hoc.png}
+        \caption{Quá trình tìm giao điểm và xét các đỉnh bằng phương pháp hình học 2D}
+    \end{figure}
+    
+    \subsubsection{Tóm tắt cách kiểm tra kết quả}
+    
+    Sau khi website trả về kết quả, người dùng có thể kiểm tra lại bằng cách thay phương án tối ưu vào hàm mục tiêu và ràng buộc.
+    
+    Với:
+    
+    \[
+    x_1 = \frac{8}{3}, \quad x_2 = \frac{8}{3}
+    \]
+    
+    Kiểm tra ràng buộc thứ nhất:
+    
+    \[
+    2x_1+x_2 = 2\cdot\frac{8}{3}+\frac{8}{3}=\frac{24}{3}=8
+    \]
+    
+    Ràng buộc thứ nhất thỏa dấu bằng.
+    
+    Kiểm tra ràng buộc thứ hai:
+    
+    \[
+    x_1+2x_2 = \frac{8}{3}+2\cdot\frac{8}{3}=\frac{24}{3}=8
+    \]
+    
+    Ràng buộc thứ hai cũng thỏa dấu bằng.
+    
+    Tính hàm mục tiêu:
+    
+    \[
+    Z = 3x_1+5x_2
+    \]
+    
+    \[
+    Z=3\cdot\frac{8}{3}+5\cdot\frac{8}{3}
+    \]
+    
+    \[
+    Z=8+\frac{40}{3}=\frac{64}{3}
+    \]
+    
+    Do đó kết quả website trả về là hợp lý:
+    
+    \[
+    \boxed{\text{PATU}=\left(\frac{8}{3},\frac{8}{3}\right)}
+    \]
+    
+    \[
+    \boxed{\text{GTTU}=\frac{64}{3}}
+    \]
+    
+    \subsection{Ví dụ bổ sung: bài toán có $x_1$, $x_2$ đều tự do}
+    
+    Để làm rõ hơn cách chương trình xử lý trường hợp biến tự do, phần này bổ sung một ví dụ riêng và giải chi tiết bằng phương pháp hình học, đồng thời minh họa quá trình so sánh giá trị hàm mục tiêu khi đi từ đỉnh này sang đỉnh kia.
+    
+    Xét bài toán:
+    
+    \[
+    f(x)=3x_1+2x_2 \rightarrow \max
+    \]
+    
+    Với các ràng buộc:
+    
+    \[
+    x_1 \leq 3
+    \]
+    
+    \[
+    -x_1 \leq 1
+    \]
+    
+    \[
+    x_2 \leq 2
+    \]
+    
+    \[
+    -x_2 \leq 2
+    \]
+    
+    \[
+    x_1, x_2 \text{ tự do}
+    \]
+    
+    \subsubsection{Bước 1: Biến đổi điều kiện và xác định miền nghiệm}
+    
+    Từ:
+    
+    \[
+    x_1 \leq 3
+    \]
+    
+    và:
+    
+    \[
+    -x_1 \leq 1
+    \]
+    
+    suy ra:
+    
+    \[
+    x_1 \geq -1
+    \]
+    
+    Do đó:
+    
+    \[
+    -1 \leq x_1 \leq 3
+    \]
+    
+    Tương tự, từ:
+    
+    \[
+    x_2 \leq 2
+    \]
+    
+    và:
+    
+    \[
+    -x_2 \leq 2
+    \]
+    
+    suy ra:
+    
+    \[
+    x_2 \geq -2
+    \]
+    
+    Do đó:
+    
+    \[
+    -2 \leq x_2 \leq 2
+    \]
+    
+    Vì vậy miền nghiệm là hình chữ nhật:
+    
+    \[
+    -1 \leq x_1 \leq 3,\qquad -2 \leq x_2 \leq 2
+    \]
+    
+    có bốn đỉnh là:
+    
+    \[
+    A(-1,-2),\quad B(-1,2),\quad C(3,-2),\quad D(3,2)
+    \]
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.97\textwidth]{fig_12_vidu_x1x2_tudo_mien_nghiem.png}
+        \caption{Miền nghiệm của ví dụ có $x_1$, $x_2$ đều tự do}
+    \end{figure}
+    
+    \subsubsection{Bước 2: Tính giá trị hàm mục tiêu tại từng đỉnh}
+    
+    Vì đây là bài toán tối đa hóa và miền nghiệm là một đa giác lồi, ta chỉ cần tính giá trị hàm mục tiêu tại các đỉnh của miền nghiệm.
+    
+    Tại đỉnh $A(-1,-2)$:
+    
+    \[
+    f(A)=3(-1)+2(-2)=-3-4=-7
+    \]
+    
+    Tại đỉnh $B(-1,2)$:
+    
+    \[
+    f(B)=3(-1)+2(2)=-3+4=1
+    \]
+    
+    Tại đỉnh $C(3,-2)$:
+    
+    \[
+    f(C)=3(3)+2(-2)=9-4=5
+    \]
+    
+    Tại đỉnh $D(3,2)$:
+    
+    \[
+    f(D)=3(3)+2(2)=9+4=13
+    \]
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.97\textwidth]{fig_15_bang_tinh_chi_tiet_tung_dinh.png}
+        \caption{Bảng tính chi tiết giá trị hàm mục tiêu tại từng đỉnh}
+    \end{figure}
+    
+    Từ kết quả trên, ta thấy:
+    
+    \[
+    -7 < 1 < 5 < 13
+    \]
+    
+    nên giá trị lớn nhất đạt được tại đỉnh:
+    
+    \[
+    D(3,2)
+    \]
+    
+    Vậy:
+    
+    \[
+    \boxed{\text{PATU}=(3,2)}
+    \]
+    
+    \[
+    \boxed{\text{GTTU}=13}
+    \]
+    
+    \subsubsection{Bước 3: Minh họa quá trình đi từ đỉnh này sang đỉnh kia}
+    
+    Để trực quan hơn, có thể quan sát sự thay đổi của hàm mục tiêu khi di chuyển giữa các đỉnh của miền nghiệm.
+    
+    \paragraph{Cách nhìn 1: đi theo cạnh trái rồi cạnh trên}
+    
+    Nếu bắt đầu từ đỉnh:
+    
+    \[
+    A(-1,-2)
+    \]
+    
+    thì:
+    
+    \[
+    f(A)=-7
+    \]
+    
+    Di chuyển thẳng lên đỉnh:
+    
+    \[
+    B(-1,2)
+    \]
+    
+    ta được:
+    
+    \[
+    f(B)=1
+    \]
+    
+    Hàm mục tiêu tăng:
+    
+    \[
+    1-(-7)=8
+    \]
+    
+    Tiếp tục di chuyển sang phải đến đỉnh:
+    
+    \[
+    D(3,2)
+    \]
+    
+    ta được:
+    
+    \[
+    f(D)=13
+    \]
+    
+    Hàm mục tiêu tăng thêm:
+    
+    \[
+    13-1=12
+    \]
+    
+    \paragraph{Cách nhìn 2: đi theo cạnh dưới rồi cạnh phải}
+    
+    Nếu vẫn bắt đầu từ:
+    
+    \[
+    A(-1,-2)
+    \]
+    
+    nhưng di chuyển sang phải đến:
+    
+    \[
+    C(3,-2)
+    \]
+    
+    thì:
+    
+    \[
+    f(C)=5
+    \]
+    
+    Hàm mục tiêu tăng:
+    
+    \[
+    5-(-7)=12
+    \]
+    
+    Tiếp tục đi thẳng lên đến:
+    
+    \[
+    D(3,2)
+    \]
+    
+    ta được:
+    
+    \[
+    f(D)=13
+    \]
+    
+    Hàm mục tiêu tăng thêm:
+    
+    \[
+    13-5=8
+    \]
+    
+    Như vậy, dù đi theo đường nào trên biên của miền nghiệm thì cuối cùng đỉnh $D(3,2)$ vẫn cho giá trị lớn nhất.
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.97\textwidth]{fig_13_di_tu_dinh_nay_sang_dinh_kia.png}
+        \caption{Minh họa đi từ đỉnh này sang đỉnh kia và sự tăng của hàm mục tiêu}
+    \end{figure}
+    
+    \subsubsection{Bước 4: Giải thích bằng hướng tăng của hàm mục tiêu}
+    
+    Hàm mục tiêu là:
+    
+    \[
+    f(x)=3x_1+2x_2
+    \]
+    
+    Vì cả hai hệ số của $x_1$ và $x_2$ đều dương nên khi $x_1$ tăng hoặc $x_2$ tăng thì $f(x)$ cũng tăng. Các đường đồng mức của hàm mục tiêu có dạng:
+    
+    \[
+    3x_1+2x_2=c
+    \]
+    
+    Đây là các đường thẳng song song với nhau. Khi dịch các đường này theo hướng Đông-Bắc (tăng cả $x_1$ và $x_2$), giá trị $c$ tăng dần. Đường đồng mức cuối cùng còn chạm được miền nghiệm sẽ chạm tại đỉnh nằm xa nhất theo hướng tăng, chính là:
+    
+    \[
+    D(3,2)
+    \]
+    
+    \begin{figure}[H]
+        \centering
+        \includefig[width=0.97\textwidth]{fig_14_huong_tang_ham_muc_tieu.png}
+        \caption{Giải thích trực quan bằng hướng tăng của hàm mục tiêu và các đường đồng mức}
+    \end{figure}
+    
+    \subsubsection{Bước 5: Kiểm tra lại kết quả}
+    
+    Thay phương án tối ưu:
+    
+    \[
+    x_1=3,\qquad x_2=2
+    \]
+    
+    vào các ràng buộc, ta có:
+    
+    \[
+    x_1=3 \leq 3
+    \]
+    
+    \[
+    -x_1=-3 \leq 1
+    \]
+    
+    \[
+    x_2=2 \leq 2
+    \]
+    
+    \[
+    -x_2=-2 \leq 2
+    \]
+    
+    Tất cả các ràng buộc đều thỏa mãn.
+    
+    Tính lại hàm mục tiêu:
+    
+    \[
+    f(3,2)=3\cdot3+2\cdot2=9+4=13
+    \]
+    
+    Do đó, kết quả của bài toán là hoàn toàn hợp lý:
+    
+    \[
+    \boxed{\text{PATU}=(3,2)}
+    \]
+    
+    \[
+    \boxed{\text{GTTU}=13}
+    \]
+    
+    \subsubsection{Cách ghi ngắn gọn vào báo cáo}
+    
+    Có thể tóm tắt ngắn gọn ví dụ này trong báo cáo như sau:
+    
+    \begin{quote}
+    Do $x_1$ và $x_2$ là các biến tự do, hệ ràng buộc cho phép suy ra miền nghiệm là hình chữ nhật $-1 \leq x_1 \leq 3$, $-2 \leq x_2 \leq 2$. Xét bốn đỉnh của miền nghiệm gồm $(-1,-2)$, $(-1,2)$, $(3,-2)$ và $(3,2)$, ta lần lượt thu được các giá trị hàm mục tiêu là $-7$, $1$, $5$ và $13$. Do đó phương án tối ưu là $(3,2)$ và giá trị tối ưu là $13$.
+    \end{quote}
+    
+    \subsection{Một số lưu ý khi đọc kết quả}
+    
+    Khi đọc kết quả trên website, cần lưu ý:
+    
+    \begin{itemize}
+        \item Chỉ kết luận bài toán có nghiệm tối ưu khi phần trạng thái báo rõ là có nghiệm tối ưu.
+        \item Nếu bài toán báo vô nghiệm, cần kiểm tra lại các ràng buộc vì có thể hệ ràng buộc mâu thuẫn.
+        \item Nếu bài toán báo không bị chặn, cần kiểm tra xem bài toán có thiếu ràng buộc giới hạn miền nghiệm hay không.
+        \item Với Simplex Hai Pha, cần đọc kết quả cuối cùng ở Pha 2, không lấy nhầm giá trị của hàm mục tiêu phụ ở Pha 1.
+        \item Với phương pháp hình học, nghiệm tối ưu thường nằm tại một đỉnh của miền nghiệm khả thi.
+        \item Khi ghi kết quả vào báo cáo, nên ghi cả dạng phân số và dạng thập phân nếu cần.
+    \end{itemize}
+    
+    % ================== PHẦN MỀM SỬ DỤNG ==================
+    \section{Phần mềm và công nghệ sử dụng}
+    
+    Dự án được xây dựng bằng các công nghệ sau:
+    
+    \begin{longtable}{|p{5cm}|p{8cm}|}
+    \hline
+    \textbf{Thành phần} & \textbf{Mô tả} \\
+    \hline
+    Ngôn ngữ lập trình & Python 3.x \\
+    \hline
+    Giao diện người dùng & HTML, CSS, JavaScript, framework giao diện tương ứng \\
+    \hline
+    Xử lý thuật toán & Python, thư viện xử lý số học và ma trận nếu có \\
+    \hline
+    Môi trường chạy & Web browser \\
+    \hline
+    Nền tảng triển khai & Render \\
+    \hline
+    Định dạng báo cáo & PDF \\
+    \hline
+    Định dạng mã nguồn nộp & File .rar hoặc link Google Drive \\
+    \hline
+    \end{longtable}
+        
+    % ================== ĐÁNH GIÁ KẾT QUẢ ==================
+    \section{Đánh giá kết quả thực hiện}
+    
+    \subsection{Các chức năng đã làm được}
+    
+    Sau quá trình thực hiện, chương trình đã đạt được các chức năng chính sau:
+    
+    \begin{itemize}
+        \item Cho phép nhập số lượng biến tùy ý.
+        \item Cho phép nhập số lượng ràng buộc tùy ý.
+        \item Hỗ trợ bài toán Max và Min.
+        \item Hỗ trợ ràng buộc dạng $\leq$, $=$ và $\geq$.
+        \item Có xử lý bài toán về dạng chuẩn.
+        \item Có thêm biến bù, biến dư và biến giả khi cần thiết.
+        \item Có áp dụng phương pháp Simplex để tìm nghiệm tối ưu.
+        \item Có thể hiển thị phương án tối ưu và giá trị tối ưu.
+        \item Có thể xuất các bảng lặp trong quá trình giải.
+        \item Có thể hiển thị danh sách các biến trong bảng lặp.
+        \item Giao diện web dễ sử dụng, phù hợp với người học.
+    \end{itemize}
+    
+    
+    \subsection{Tỷ lệ hoàn thành chức năng}
+    
+    Dựa trên yêu cầu đề bài, nhóm tự đánh giá mức độ hoàn thành như sau:
+    
+    \begin{longtable}{|p{8cm}|c|}
+    \hline
+    \textbf{Yêu cầu} & \textbf{Mức độ hoàn thành} \\
+    \hline
+    Cho phép số lượng biến tùy ý & 100\% \\
+    \hline
+    Cho phép số lượng ràng buộc tùy ý & 100\% \\
+    \hline
+    Hỗ trợ dấu $\leq$, $=$, $\geq$ & 100\% \\
+    \hline
+    Hỗ trợ Max và Min & 100\% \\
+    \hline
+    Xử lý ràng buộc biên của biến & 100\% \\
+    \hline
+    Đưa ra phương án tối ưu và giá trị tối ưu & 100\% \\
+    \hline
+    Xuất tất cả biến trong bảng lặp & 100\% \\
+    \hline
+    Hiển thị bảng lặp & 100\% \\
+    \hline
+    Giao diện và hướng dẫn sử dụng & 100\% \\
+    \hline
+    \textbf{Tổng mức độ hoàn thành ước tính} & \textbf{100\%} \\
+    \hline
+    \end{longtable}
+    
+    % ================== KIỂM THỬ ==================
+    \section{Kiểm thử chương trình}
+    
+    \subsection{Mục tiêu kiểm thử}
+    
+    Mục tiêu kiểm thử là đảm bảo chương trình xử lý đúng các trường hợp bài toán quy hoạch tuyến tính khác nhau, bao gồm bài toán Max, Min, ràng buộc $\leq$, $=$, $\geq$, bài toán có biến giả, bài toán có nghiệm tối ưu và bài toán không có nghiệm.
+    
+    \subsection{Một số trường hợp kiểm thử}
+    
+    \begin{longtable}{|c|p{5cm}|p{5cm}|p{3cm}|}
+    \hline
+    \textbf{STT} & \textbf{Trường hợp kiểm thử} & \textbf{Kết quả mong muốn} & \textbf{Trạng thái} \\
+    \hline
+    1 & Bài toán Max với toàn bộ ràng buộc $\leq$ & Tìm được nghiệm tối ưu & Đạt \\
+    \hline
+    2 & Bài toán Min với ràng buộc $\geq$ & Chuyển đổi và giải được bài toán & Đạt \\
+    \hline
+    3 & Bài toán có ràng buộc dấu $=$ & Thêm biến giả và giải bằng hai pha & Đạt \\
+    \hline
+    4 & Bài toán có biến không dương & Chuyển biến về dạng không âm & Đạt \\
+    \hline
+    5 & Bài toán có biến tự do & Tách biến thành hiệu của hai biến không âm & Đạt \\
+    \hline
+    6 & Bài toán vô nghiệm & Thông báo bài toán không có nghiệm khả thi & Đạt \\
+    \hline
+    7 & Bài toán không bị chặn & Thông báo bài toán không bị chặn & Đạt \\
+    \hline
+    \end{longtable}
+    
+    % ================== KẾT LUẬN ==================
+    \section{Kết luận}
+    
+    Dự án \textbf{QHTT Studio} đã xây dựng được một chương trình hỗ trợ giải bài toán quy hoạch tuyến tính tổng quát bằng phương pháp Simplex. Chương trình cho phép người dùng nhập số lượng biến và ràng buộc tùy ý, lựa chọn loại bài toán Max hoặc Min, nhập các loại ràng buộc khác nhau và xem kết quả giải một cách trực quan.
+    
+    Điểm nổi bật của chương trình là không chỉ đưa ra phương án tối ưu và giá trị tối ưu, mà còn hiển thị các bảng lặp trong quá trình giải. Điều này giúp người học dễ dàng theo dõi thuật toán, hiểu cách chọn biến vào, biến ra và cách bảng đơn hình được cập nhật sau mỗi vòng lặp.
+    
+    Nhìn chung, dự án đã đáp ứng đầy đủ các yêu cầu chính của đề bài. Các chức năng quan trọng như nhập bài toán tổng quát, xử lý các dạng ràng buộc, giải bằng các phương pháp Simplex, hiển thị phương án tối ưu, giá trị tối ưu và bảng lặp đều được hoàn thành. Đây là một sản phẩm có tính ứng dụng trong học tập, giúp sinh viên hiểu rõ hơn về quy hoạch tuyến tính và phương pháp Simplex.
+    
+    % ================== TÀI LIỆU THAM KHẢO ==================
+    \section{Tài liệu tham khảo}
+    
+    \subsection{Tài liệu chuyên môn}
+    \begin{enumerate}
+        \item GS.TSKH. Phan Quốc Khánh, TS. Trần Huệ Nương, \textit{Giáo trình Quy hoạch tuyến tính}.
+        \item Mokhtar S. Bazaraa, John J. Jarvis, Hanif D. Sherali, \textit{Linear Programming and Network Flows}, John Wiley \& Sons. \\
+        (Tài liệu chuyên sâu về phương pháp Simplex, Simplex Hai pha và Hình học 2D).
+        (Cơ sở lý thuyết nền tảng của thuật toán Simplex tiêu chuẩn Dantzig).
+        \item Robert G. Bland (1977), ``New finite pivoting rules for the simplex method'', \textit{Mathematics of Operations Research}, 2(2), tr. 103--107. \\
+        (Tài liệu gốc về thuật toán chống xoay vòng Bland được cài đặt trong chương trình).
+    \end{enumerate}
+
+    \subsection{Phần mềm, công cụ và thuật toán tham khảo}
+    \begin{enumerate}
+        \item \textbf{LINGO} (LINDO Systems) và tiện ích \textbf{Solver} trong Microsoft Excel: Công cụ chuyên dụng để giải Toán tối ưu và kiểm chứng kết quả.
+        \item \textbf{SciPy} (\texttt{scipy.optimize}) và \textbf{PuLP}: Thư viện lập trình tối ưu hóa tham khảo bằng ngôn ngữ Python.
+        \item \textbf{Các trợ lý Trí tuệ nhân tạo (AI)}: Hỗ trợ tìm kiếm tài liệu, tư vấn thuật toán và khắc phục lỗi lập trình.
+    \end{enumerate}
+    
+    \end{document}
+    

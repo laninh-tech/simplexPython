@@ -1,3 +1,8 @@
+# Thư viện web server chính cho ứng dụng QHTT Studio
 Flask>=2.0.0
+
+# Thư viện xử lý ma trận và tính toán số học nâng cao
 numpy>=1.20.0
+
+# Web server WSGI chạy ứng dụng trên môi trường production (như Render/Heroku)
 gunicorn>=20.1.0

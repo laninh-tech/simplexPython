@@ -2,7 +2,7 @@ import numpy as np
 from typing import List, Dict, Any, Tuple
 from .expression_eval import eval_expression
 
-# Status constants
+# Hằng số Trạng thái (Status constants)
 STATUS_OPTIMAL = 0
 STATUS_INFEASIBLE = 1
 STATUS_UNBOUNDED = 2
@@ -35,7 +35,7 @@ class SimplexCoreSolver:
         """Save the current tableau state to the iteration log."""
         tableau_copy = self.T.copy()
         
-        # Determine the current basic variable names
+        # Xác định tên biến cơ sở hiện tại
         co_so_names = []
         for idx in self.basis:
             if idx < len(self.var_names):
@@ -43,22 +43,22 @@ class SimplexCoreSolver:
             else:
                 co_so_names.append(f"x{idx + 1}")
 
-        # Prepare table headers and labels
+        # Chuẩn bị tiêu đề hàng và cột cho bảng lặp
         cols = list(self.var_names) + ["b"]
         rows = co_so_names + ["z" if phase_name in ["pha2", "don_hinh"] else "w"]
                 
-        # Build matrix values
+        # Dựng giá trị ma trận
         matrix_vals = []
         for i in range(self.T.shape[0]):
             matrix_vals.append([float(x) for x in self.T[i]])
 
-        # Calculate nghiem_tam (current basic solution for original variables)
+        # Tính toán nghiệm tạm thời (nghiệm cơ sở hiện tại đối với biến gốc)
         nghiem_tam = [0.0] * self.n_orig
         for i, idx in enumerate(self.basis):
             if idx < self.n_orig:
                 nghiem_tam[idx] = float(self.T[i, -1])
 
-        # Objective value
+        # Giá trị hàm mục tiêu
         obj_val = float(self.T[-1, -1])
         if phase_name == "pha2" or phase_name == "don_hinh":
             obj_val = float(self.T[-1, -1])
@@ -159,16 +159,16 @@ class SimplexCoreSolver:
         self.loai_muc_tieu = p.loai_muc_tieu
         self.basis = [-1] * self.m
         
-        # Build variable names and track columns
+        # Thiết lập tên biến gốc và theo dõi các cột
         self.var_names = [f"x{j + 1}" for j in range(self.n_orig)]
         self.is_art = [False] * self.n_orig
         
-        # We need to construct rows for the tableau.
-        # Temp structures for Slack, Surplus, and Artificials.
+        # Dựng các hàng cho bảng đơn hình
+        # Cấu trúc tạm thời lưu trữ các cột cho Biến bù (Slack), Biến dư (Surplus) và Biến giả (Artificial)
         rows_A = []
         rhs_vals = []
         
-        cols_slack_surplus = [] # list of lists, each representing a column
+        cols_slack_surplus = [] # danh sách chứa các cột dạng List
         cols_art = []
         
         slack_surplus_count = 0
@@ -191,14 +191,13 @@ class SimplexCoreSolver:
             rows_A.append(row_coeffs)
             
             if sign_val == "<=":
-                # Add slack column
+                # Thêm cột biến bù
                 slack_surplus_count += 1
                 col = [0.0] * self.m
                 col[i] = 1.0
                 cols_slack_surplus.append((col, f"s{i + 1}"))
-                # Basis variable for this row is the slack variable
             elif sign_val == ">=":
-                # Add surplus and artificial columns
+                # Thêm cột biến dư và cột biến giả
                 slack_surplus_count += 1
                 col_s = [0.0] * self.m
                 col_s[i] = -1.0
@@ -209,16 +208,16 @@ class SimplexCoreSolver:
                 col_a[i] = 1.0
                 cols_art.append((col_a, f"a{i + 1}"))
             elif sign_val == "=":
-                # Add artificial column
+                # Thêm cột biến giả
                 art_count += 1
                 col_a = [0.0] * self.m
                 col_a[i] = 1.0
                 cols_art.append((col_a, f"a{i + 1}"))
                 
-        # Now rebuild self.var_names and self.is_art in order:
-        # 1. Original variables: x1, x2, ...
-        # 2. Slack/surplus columns
-        # 3. Artificial columns
+        # Tái dựng self.var_names và self.is_art theo thứ tự:
+        # 1. Các biến quyết định gốc: x1, x2, ...
+        # 2. Các biến bù/dư
+        # 3. Các biến giả
         
         columns = [np.array([rows_A[i][j] for i in range(self.m)]) for j in range(self.n_orig)]
         
@@ -243,12 +242,12 @@ class SimplexCoreSolver:
             self.T[:-1, j] = col
         self.T[:-1, -1] = rhs_vals
         
-        # Set basis
-        # Find which column corresponds to basis variable for each row
-        # For each row i:
-        # - if sign was <=: slack column i has 1.0 in row i, others 0. It is in basis.
-        # - if sign was >=: artificial column has 1.0 in row i, others 0. It is in basis.
-        # - if sign was =: artificial column has 1.0 in row i, others 0. It is in basis.
+        # Thiết lập cơ sở ban đầu (basis)
+        # Xác định cột nào tương ứng làm biến cơ sở cho mỗi hàng
+        # Đối với mỗi hàng i:
+        # - Nếu dấu là <=: Cột biến bù i có hệ số 1.0 ở hàng i, còn lại là 0. Nó sẽ ở trong cơ sở.
+        # - Nếu dấu là >=: Cột biến giả tương ứng sẽ ở trong cơ sở.
+        # - Nếu dấu là =: Cột biến giả tương ứng sẽ ở trong cơ sở.
         slack_surplus_idx = self.n_orig
         art_idx = self.n_orig + len(cols_slack_surplus)
         
@@ -268,7 +267,7 @@ class SimplexCoreSolver:
                 self.basis[i] = slack_surplus_idx + slack_surplus_counter
                 slack_surplus_counter += 1
             elif sign_val == ">=":
-                slack_surplus_counter += 1  # skip surplus column, it's not in basis
+                slack_surplus_counter += 1  # bỏ qua cột biến dư vì nó không thuộc cơ sở ban đầu
                 self.basis[i] = art_idx + art_counter
                 art_counter += 1
             elif sign_val == "=":
@@ -307,10 +306,10 @@ class SimplexCoreSolver:
         if not self.build_tableau(p):
             return {"status": STATUS_ERROR, "text": "Lỗi: Không thể dựng bảng đơn hình\n"}
             
-        # Initial tableau logging
+        # Ghi nhận bảng đơn hình ban đầu
         self.log_tableau("pha1" if self.art_count > 0 else "don_hinh", "Bảng đơn hình ban đầu")
         
-        # Phase 1
+        # Pha 1 (Phase 1)
         if self.art_count > 0:
             cost = np.zeros(self.total_vars)
             for j in range(self.total_vars):
@@ -318,7 +317,7 @@ class SimplexCoreSolver:
             self.set_objective_from_costs(cost)
             self.skip_artificial_entering = False
             
-            # Log objective update for Phase 1
+            # Ghi nhận thay đổi hàm mục tiêu cho Pha 1
             self.log_tableau("pha1", "Thiết lập hàm mục tiêu phụ cho pha 1")
             
             st = self.run_simplex(pivot_rule, "pha1")
@@ -329,7 +328,7 @@ class SimplexCoreSolver:
                     "text": f"Kết quả: Vô nghiệm\nz = {'-∞' if p.objectiveType == 1 else '∞'}\n"
                 }
                 
-            # Drive remaining artificials out of basis if any
+            # Đẩy các biến giả còn lại ra khỏi cơ sở (nếu có)
             for i in range(self.m):
                 if self.is_art[self.basis[i]]:
                     entering = -1
@@ -341,7 +340,7 @@ class SimplexCoreSolver:
                         self.pivot(i, entering)
                         self.log_tableau("pha1", f"Đẩy biến giả ra khỏi cơ sở tại hàng {i + 1}")
                         
-        # Phase 2
+        # Pha 2 (Phase 2)
         cost = np.zeros(self.total_vars)
         for j in range(self.n_orig):
             cost[j] = p.c[j] if p.objectiveType == 1 else -p.c[j]
@@ -349,7 +348,7 @@ class SimplexCoreSolver:
         self.set_objective_from_costs(cost)
         self.skip_artificial_entering = True
         
-        # Log objective update for Phase 2
+        # Ghi nhận thiết lập hàm mục tiêu gốc cho Pha 2
         self.log_tableau("pha2" if self.art_count > 0 else "don_hinh", "Thiết lập hàm mục tiêu chính")
         
         st = self.run_simplex(pivot_rule, "pha2" if self.art_count > 0 else "don_hinh")
@@ -368,13 +367,13 @@ class SimplexCoreSolver:
                 "text": "Kết quả: Lỗi không thể giải\n"
             }
             
-        # Success! Read solution
+        # Giải thành công! Đọc nghiệm và trả về kết quả
         sol = self.get_solution_dict(p)
         sol["iteration_log"] = self.iteration_log
         is_multiple = self.has_multiple()
         sol["solution_type"] = SOL_MULTIPLE if is_multiple else SOL_UNIQUE
         
-        # Format text output
+        # Định dạng văn bản kết quả hiển thị
         lines = []
         status_txt = "Vô số nghiệm tối ưu" if is_multiple else "Nghiệm tối ưu duy nhất"
         lines.append(f"Kết quả: {status_txt}")

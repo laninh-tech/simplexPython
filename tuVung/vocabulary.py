@@ -26,7 +26,7 @@ def build_initial_vocabulary(p: LPProblem) -> str:
     lines = []
     lines.append("Từ vựng xuất phát:")
     
-    # 1. z equation
+    # 1. Phương trình hàm mục tiêu z
     z_parts = []
     first = True
     for j in range(p.n):
@@ -39,7 +39,7 @@ def build_initial_vocabulary(p: LPProblem) -> str:
     z_expr = "".join(z_parts) if z_parts else "0"
     lines.append(f"z = {z_expr}")
     
-    # 2. Slack/Surplus equations (represented as W_i)
+    # 2. Phương trình biến bù/dư (được ký hiệu là W_i)
     for i in range(p.m):
         row_parts = [f"W{i + 1} = {p.b[i]:.6g}"]
         for j in range(p.n):
@@ -49,7 +49,7 @@ def build_initial_vocabulary(p: LPProblem) -> str:
                 row_parts.append(term_str)
         lines.append("".join(row_parts))
         
-    # 3. Variable bounds
+    # 3. Điều kiện biên của các biến
     lines.append("")
     lines.append("Ràng buộc dấu:")
     for j in range(p.n):

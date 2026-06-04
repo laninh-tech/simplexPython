@@ -5,23 +5,23 @@ from .bland import solve_bland
 from .two_phase import solve_two_phase
 from .geometry import solve_geometry
 
-# Method Constants
+# Hằng số Phương pháp giải (Method Constants)
 METHOD_GEOMETRY = 0
 METHOD_DANTZIG = 1
 METHOD_BLAND = 2
 METHOD_TWO_PHASE = 3
 
-# Sign Constants
+# Hằng số Dấu ràng buộc (Sign Constants)
 SIGN_LE = 0
 SIGN_GE = 1
 SIGN_EQ = 2
 
-# Variable Sign Constants
+# Hằng số Điều kiện biên của biến (Variable Sign Constants)
 VAR_NONNEG = 0
 VAR_NONPOS = 1
 VAR_FREE = 2
 
-# Objective Constants
+# Hằng số Loại hàm mục tiêu (Objective Constants)
 OBJ_MAX = 1
 OBJ_MIN = 2
 
@@ -39,12 +39,12 @@ class LPProblem:
     ):
         self.n = n
         self.m = m
-        self.objectiveType = objectiveType  # 1 for MAX, 2 for MIN
+        self.objectiveType = objectiveType  # 1 đại diện cho MAX, 2 đại diện cho MIN
         self.c = list(c)
         self.A = [list(row) for row in A]
         self.b = list(b)
         
-        # Standardize constraint signs to strings
+        # Chuẩn hóa dấu ràng buộc thành dạng chuỗi
         self.sign = []
         for s in sign:
             if s == SIGN_LE or s == "<=":
@@ -56,7 +56,7 @@ class LPProblem:
             else:
                 self.sign.append(str(s))
                 
-        # Standardize variable signs to integers
+        # Chuẩn hóa điều kiện biên của biến thành số nguyên (integers)
         self.varSign = []
         for vs in varSign:
             if vs == VAR_NONNEG or vs == ">=0":
@@ -132,7 +132,7 @@ def transform_problem(p: LPProblem) -> tuple:
 def recover_original_solution(p: LPProblem, var_map: VarMap, tmp_sol: Dict[str, Any]) -> Dict[str, Any]:
     """Translate standard form solution back to original problem variables."""
     sol = dict(tmp_sol)
-    if tmp_sol["status"] != 0: # not STATUS_OPTIMAL
+    if tmp_sol["status"] != 0: # Không phải trạng thái tối ưu (not STATUS_OPTIMAL)
         return sol
         
     orig_x = [0.0] * p.n
@@ -165,7 +165,7 @@ def recover_original_solution(p: LPProblem, var_map: VarMap, tmp_sol: Dict[str, 
         opt += p.c[j] * orig_x[j]
     sol["optimum"] = opt
     
-    # Formulate nice solution text representation
+    # Dựng biểu diễn chuỗi kết quả đẹp để hiển thị
     lines = []
     if has_free_var(p):
         status_txt = "Một nghiệm tối ưu"
@@ -182,10 +182,11 @@ def recover_original_solution(p: LPProblem, var_map: VarMap, tmp_sol: Dict[str, 
 
 def solve_lp(p: LPProblem, method: int) -> Dict[str, Any]:
     """Coordinate solving of LP problem, handling variables transformations."""
+    if method == METHOD_GEOMETRY:
+        return solve_geometry(p)
+
     if not has_nonstandard_var(p):
-        if method == METHOD_GEOMETRY:
-            return solve_geometry(p)
-        elif method == METHOD_DANTZIG:
+        if method == METHOD_DANTZIG:
             return solve_dantzig(p)
         elif method == METHOD_BLAND:
             return solve_bland(p)
@@ -193,14 +194,8 @@ def solve_lp(p: LPProblem, method: int) -> Dict[str, Any]:
             return solve_two_phase(p)
         else:
             return {"status": 3, "text": "Lỗi: Không tìm thấy phương pháp giải hợp lệ\n"}
-            
-    if method == METHOD_GEOMETRY:
-        return {
-            "status": 3,
-            "text": "Kết quả: Phương pháp hình học chỉ hỗ trợ các biến x >= 0\n"
-        }
         
-    # Transform problem to positive variables only
+    # Biến đổi bài toán để chỉ chứa các biến số không âm (x >= 0)
     q, var_map = transform_problem(p)
     
     if method == METHOD_DANTZIG:

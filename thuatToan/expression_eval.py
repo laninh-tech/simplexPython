@@ -7,8 +7,8 @@ class SafeEvalVisitor(ast.NodeVisitor):
             'sqrt': math.sqrt,
             'abs': abs,
             'exp': math.exp,
-            'log': math.log10,  # in C, log(x) is log10
-            'ln': math.log,     # in C, ln(x) is log
+            'log': math.log10,  # Trong C, log(x) là log cơ số 10
+            'ln': math.log,     # Trong C, ln(x) là log tự nhiên (log cơ số e)
             'root': lambda a, b: math.pow(b, 1.0 / a) if b >= 0 or int(a) % 2 != 0 else -math.pow(-b, 1.0 / a)
         }
         self.constants = {
@@ -64,8 +64,8 @@ def eval_expression(expr_str: str) -> float:
     if not expr_str or not expr_str.strip():
         return 0.0
     try:
-        expr_str = expr_str.replace('^', '**')  # standard caret to Python power conversion
-        # Normalize Unicode dashes (en-dash, em-dash, figure dash, horizontal bar, mathematical minus) to standard hyphens
+        expr_str = expr_str.replace('^', '**')  # Chuyển đổi ký hiệu '^' thành '**' đại diện cho lũy thừa trong Python
+        # Chuẩn hóa các dấu gạch ngang Unicode khác nhau thành dấu trừ tiêu chuẩn '-'
         expr_str = expr_str.replace('\u2012', '-').replace('\u2013', '-').replace('\u2014', '-').replace('\u2015', '-').replace('\u2212', '-')
         tree = ast.parse(expr_str.strip(), mode='eval')
         visitor = SafeEvalVisitor()
