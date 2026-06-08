@@ -1312,6 +1312,9 @@
 
         solBox.innerHTML = `
           <div class="results-status-badge ${statusClass}">${statusLabel}</div>
+          ${data.status === 0 && data.solution && data.solution.solution_type === 1 ? `
+            <div class="results-status-badge status-success" style="margin-left: 10px;">Vô số nghiệm</div>
+          ` : ''}
           <div class="optimum-highlight">$z = ${objVal}$</div>
           ${data.status === 0 ? `
             <table class="variables-table">

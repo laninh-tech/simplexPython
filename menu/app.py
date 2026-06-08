@@ -168,6 +168,7 @@ def solve():
                 "objective_value": opt_val,
                 "objective_type": problem.loai_muc_tieu,
                 "solution_vector": x_sol,
+                "solution_type": sol.get("solution_type", 0),
             },
             "iteration_log": sol.get("iteration_log", []),
             "num_iterations": len(sol.get("iteration_log", []))
